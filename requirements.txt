@@ -1,3 +1,6 @@
-playwright
-playwright-stealth
-python-dotenv
+greenlet==3.2.0
+playwright==1.51.0
+playwright-stealth==1.0.6
+pyee==12.1.1
+python-dotenv==1.1.0
+typing_extensions==4.13.2
