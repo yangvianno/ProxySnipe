@@ -1,6 +1,6 @@
 import argparse
 from login_helper import perform_login
-from bid_proxy import snipe_bid
+from bid_snipe import snipe_bid
 
 def main():
     parser = argparse.ArgumentParser(description="eBay Auction Sniper Bot")
