@@ -1,1 +1,1 @@
-# ebay_sniper
+# ProxySnipeAI
