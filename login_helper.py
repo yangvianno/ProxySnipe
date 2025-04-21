@@ -1,4 +1,3 @@
-
 from playwright.sync.api import sync_playwright
 from playwright_stealth import stealth_sync
 from config import *
