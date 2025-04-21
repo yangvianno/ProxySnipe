@@ -1,0 +1,4 @@
+.env
+ebay_state.json
+__pycache__/
+*.pyc
