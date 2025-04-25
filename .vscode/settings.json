@@ -1,7 +1,7 @@
 {
-    "python.defaultInterpreterPath": "venv/bin/python",
-    "python.pythonPath": "venv/bin/python",
+    "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
     "python.analysis.extraPaths": ["./venv/lib/python3.11/site-packages"],
     "python.analysis.indexing": true,
-    "python.analysis.autoSearchPaths": true
+    "python.analysis.autoSearchPaths": true,
+    "python.terminal.activateEnvironment" : true
   }

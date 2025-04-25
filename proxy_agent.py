@@ -1,6 +1,8 @@
+# proxy_agent.py
+
 import argparse
 from login_helper import perform_login
-from bid_snipe import snipe_bid
+from bid_proxy import snipe_proxy
 
 def main():
     parser = argparse.ArgumentParser(description="eBay Auction Sniper Bot")
@@ -14,7 +16,7 @@ def main():
     if args.login:
         perform_login()
     elif args.item and args.max_bid:
-        snipe_bid(args.item, args.max_bid, args.offset)
+        snipe_proxy(args.item, args.max_bid, args.offset)
     else:
         parser.print_help()
 

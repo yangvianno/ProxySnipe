@@ -1,4 +1,4 @@
-from playwright.sync.api import sync_playwright
+from playwright.sync_api import sync_playwright
 from playwright_stealth import stealth_sync
 from config import *
 
@@ -10,10 +10,10 @@ def perform_login():
 		stealth_sync(page)
 
 		page.goto(LOGIN_URL)
-		page.fill("input[name = 'userid']")
+		page.fill("input[data-testid='userid']", EBAY_USERNAME)
 		page.click("button#signin-continue-btn")
-		page.wait_for_selector("input[name='pass']", timeput=10000)
-		page.fill("input[name='pass']", EBAY_PASSWORD)
+		page.wait_for_selector("input[data-testid='pass']", timeput=10000)
+		page.fill("input[data-testid='pass']", EBAY_PASSWORD)
 		page.click("button#sgnBt")
 		page.wait_for_load_state("networkidle")
 
