@@ -39,8 +39,8 @@ streamlit run dashboard/dashboard_app.py
 
 ## 🙌 Built With
 - Playwright
-- playwright-stealth
-- scikit-learn
+- Playwright-stealth
+- Scikit-learn
 - Streamlit
 - python-dotenv
 - joblib
