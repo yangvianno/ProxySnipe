@@ -3,7 +3,7 @@
 from playwright.sync_api import sync_playwright
 from playwright_stealth import stealth_sync
 from monitor.auction_monitor import monitor_auction
-from smart_evaluator import should_bid
+from ML.smart_evaluator import should_bid
 from utils.logger import get_logger
 import time
 import random

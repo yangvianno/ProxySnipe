@@ -21,3 +21,16 @@ if __name__ == "__main__":
     model_dir = "ML/models"
     os.makedirs(model_dir, exist_ok = True)  # Create the directory if missing
     joblib.dump(model, os.path.join(model_dir, "price_predictor.pkl"))
+
+
+
+# Load the model
+model = joblib.load("ML/models/price_predictor.pkl")
+
+# View a summary of the model
+print(model)
+# e.g., RandomForestRegressor(...)
+
+# Inspect key attributes
+print("Number of trees:", len(model.estimators_))
+print("Feature importances:", model.feature_importances_)

@@ -4,7 +4,7 @@
 #   Periodically checks:
 # 		Current bid price
 # 		Number of bids
-# 		Time left (e.g., check every 30 seconds)
+# 		Time left (e.g., check every 10 seconds)
 
 # Continuously scrapes the current price, numbers of bids, and time left
 # Stops when your're priced out or when it's time to snipe
@@ -13,6 +13,7 @@ import time
 import re
 from playwright.sync_api import Page
 from utils.time_parser import parse_time_left
+from ML.smart_evaluator import should_bid
 
 def monitor_auction(page: Page, max_bid: float, offset: int = 5, poll_interval: int = 30):
     """
@@ -44,44 +45,41 @@ def monitor_auction(page: Page, max_bid: float, offset: int = 5, poll_interval: 
         # 4. Scrape time left (e.g., "Ends in 33m 56s")
         time_text = page.locator("div[data-testid='x-end-time']").inner_text()
         time_left_str = time_text.replace("Ends in", "").strip()
-        h, m, s = parse_time_left(time_left_str)
-        time_left_sec = h * 3600 + m * 60 + s
-        raw_time = f"{h}h {m}m {s}s"
+        d, h, m, s, time_left_sec = parse_time_left(time_left_str)
+        raw_time = f"{d}d {h}h {m}m {s}s"
 
-        # 5. Stop condition
+        # 5. Save live snapshot for dashboard (writes data to monitor/live_status.json)
+        import json
+        try:
+            with open("monitor/live_status.json", "r") as f:
+                old = json.load(f)
+                price__history = old.get("price_history", []) + [current_price] # get the existing history (or use an empty list if it doesn't exist)
+        except:
+            price__history = [current_price]
+
+        decision = "✅ Bid" if should_bid(current_price, num_bids, time_left_sec, max_bid) else "🕓 Hold"
+        
+        snapshot = {
+            "item_title": page.title(),
+            "current_price": current_price,
+            "num_bids": num_bids,
+            "time_left": time_left_sec,
+            "raw_time": raw_time,
+            "decision": decision,
+            "price_history": price__history,
+        }
+        # Write snapshot -> JSON cache
+        with open("monitor/live_status.json", "w") as f: 
+            json.dump(snapshot, f, indent=2)
+
+        # 6. Exit condition
         if current_price >= max_bid:
             print(f"🔒 Got out bidded / Priced out: ${current_price} ≥ ${max_bid}")
             break
 
-        if time_left_sec <= offset:
+        if time_left_sec <= offset * 60:
             print(f"⏳ {raw_time} left ≤ offset {offset}s → final window")
             break
 
-        # 6. Yeild for bidding logic
-        yield {
-            "current_price": current_price,
-            "num_bids": num_bids,
-            "time_left": time_left_sec,
-            "raw_time": f"{h}h {m}m {s}s"
-        }
-
         # 7. Wait to poll again
         time.sleep(poll_interval)
-
-def get_live_auction():
-    import random
-    mock_auctions = [
-        {
-            "item_url": "https://www.ebay.com/itm/1234567890",
-            "current_price": round(random.uniform(50, 150), 2),
-            "num_bids": random.randint(1, 20),
-            "time_left_sec": random.randint(100, 600),
-        },
-        {
-            "item_url": "https://www.ebay.com/itm/9876543210",
-            "current_price": round(random.uniform(200, 400), 2),
-            "num_bids": random.randint(5, 25),
-            "time_left_sec": random.randint(200, 800),
-        },
-    ]
-    return mock_auctions

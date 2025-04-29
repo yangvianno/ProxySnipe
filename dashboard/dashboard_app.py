@@ -3,53 +3,52 @@
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import streamlit as st
+import streamlit
 import pandas as pd
+import json
 import time
-from ML.predictor import predict_final_price, predict_win_probability
+from datetime import timedelta
 from config.config_loader import config
-from monitor.auction_monitor import get_live_auction
 
-st.set_page_config(page_title = "ProxySnipeAI Dashboard", layout = "wide")
-st.title("ProxySnipeAI Dashbaord")
-st.caption("Real-time auction tracking with AI-enhanced insights.")
+streamlit.set_page_config(page_title = "ProxySnipeAI Dashboard", layout = "wide")
+streamlit.title("🎯 ProxySnipeAI Auction Monitor")
+streamlit.caption("Real-time auction tracking with AI-enhanced insights.")
 
 # Live updating section
-placeholder = st.empty()
-refresh_interval = config['dashboard']['refresh_interval_sec']
+placeholder = streamlit.empty()
+refresh_interval = config['dashboard']['refresh_interval_sec'] # Auto refresh every 10 seconds
+
+LIVE_DATA_PATH = os.path.join(os.path.dirname(__file__), '..', 'monitor', 'live_status.json')
 
 while True:
     with placeholder.container():
-        st.subheader("Live Auction")
+        streamlit.subheader("Live Auction(s)")
 
-        # --- Get live auctions (mock for now) ---
-        # Expected: list of dicts [{"item_url": str, "current_price": float, "num_bids": int, "time_left_sec": int}]
-        auctions = get_live_auction()
+        if os.path.exists(LIVE_DATA_PATH):
+            with open(LIVE_DATA_PATH, "r") as f:
+                data = json.load(f)
 
-        if not auctions:
-            st.info("No active auctions being monitored.")
-        else:
-            auction_df = pd.DataFrame(auctions)
+            if isinstance(data, dict):
+                data = [data] # Wrap single entry as list
 
-            # Predict final price and win probability
-            auction_df["Predicted Final Price"] = auction_df.apply(
-                lambda row: predict_final_price(row["current_price"], row["num_bids"], row["time_left_sec"]),
-                axis = 1
-            )
+            for item in data:
+                with streamlit.expander(f"🛒 {item.get('item_title', 'Unknown')}"):
+                    col1, col2, col3 = streamlit.columns(3)
+                    col1.metric("💲 Current Price", f"${item.get('current_price', 'N/A')}")
+                    col2.metric("🧮 Bids", f"${item.get('num_bids', 'N/A')}")
+                    col3.metric("⏳ Time Left", str(timedelta(seconds=int(item.get('time_left')))))
 
-            auction_df["Win Probability"] = auction_df.apply(
-                lambda row: predict_win_probability(row["current_price"], row["num_bids"], row["time_left_sec"]),
-                axis = 1
-            )
+                    decision = item.get('decision', 'Unknown')
+                    if decision == "Bid":
+                        streamlit.success("✅ Will Bid")
+                    else:
+                        streamlit.info("🕓 Holding")
 
-            # Decide recommended action
-            auction_df["Recommended Action"] = auction_df.apply(
-                lambda row: "✅ Bid" if (row["Predicted Final Price"] <= row["current_price"]
-                                     and row["Win probability"] >= config['ML']['min_win_probability'])
-                                     else "❌ Hold",
-                axis = 1
-            )
+                    if "price_history" in item:
+                        streamlit.markdown("### 📈 Price Evolution")
+                        streamlit.line_chart(item["price_history"])
 
-            st.dataframe(auction_df, use_container_width = True)
+            streamlit.warning("⚠️ No live auction data found. Start the sniping bot.")
 
+    # 💡 Auto-refresh after showing everything
     time.sleep(refresh_interval)
