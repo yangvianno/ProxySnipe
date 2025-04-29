@@ -12,7 +12,7 @@
 import time
 import re
 from playwright.sync_api import Page
-from time_parser import parse_time_left
+from utils.time_parser import parse_time_left
 
 def monitor_auction(page: Page, max_bid: float, offset: int = 5, poll_interval: int = 30):
     """
@@ -29,12 +29,12 @@ def monitor_auction(page: Page, max_bid: float, offset: int = 5, poll_interval: 
         
         # 1. If the page is slow, calling locator(...).inner_text() can throw. 
         # Do a quick page.wait_for_selector() for each before scraping.
-        page.wait_for_selector("div[data-testid='x-price-primary'] span")
+        page.wait_for_selector("div[data-testid='x-bid-price'] span.ux-textspans")
         page.wait_for_selector("div[data-testid='x-bid-count']")
         page.wait_for_selector("div[data-testid='x-end-time']")
 
         # 2. Scrape current price "US $54.00"
-        price_text = page.locator("div[data-testid='x-price-primary'] span").inner_text()
+        price_text = page.locator("div[data-testid='x-bid-price'] span.ux-textspans").first.inner_text()
         current_price = float(price_text.replace("US", "").replace("$", "").strip())
 
         # 3. Scrape bid count (e.g., "18 bids")
@@ -68,3 +68,20 @@ def monitor_auction(page: Page, max_bid: float, offset: int = 5, poll_interval: 
         # 7. Wait to poll again
         time.sleep(poll_interval)
 
+def get_live_auction():
+    import random
+    mock_auctions = [
+        {
+            "item_url": "https://www.ebay.com/itm/1234567890",
+            "current_price": round(random.uniform(50, 150), 2),
+            "num_bids": random.randint(1, 20),
+            "time_left_sec": random.randint(100, 600),
+        },
+        {
+            "item_url": "https://www.ebay.com/itm/9876543210",
+            "current_price": round(random.uniform(200, 400), 2),
+            "num_bids": random.randint(5, 25),
+            "time_left_sec": random.randint(200, 800),
+        },
+    ]
+    return mock_auctions

@@ -1,11 +1,10 @@
-#data_preprocess.py
+# data_preprocess.py
 
-import os, pandas as pd, numpy as np
+import os, pandas as pd
 import re
 
 RAW_DIR = "data/raw"
 PROCESSED_DIR = "data/processed"
-OUT_CSV = os.path.join(PROCESSED_DIR, "auction_logs_preprocessed.csv") # -> 'data/processed/auction_logs_preprocessed.csv'
 os.makedirs(PROCESSED_DIR, exist_ok=True)
 
 # Process every .csv in RAW_DIR

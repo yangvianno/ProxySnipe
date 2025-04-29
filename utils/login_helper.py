@@ -1,6 +1,8 @@
+# login_helper.py
+
 from playwright.sync_api import sync_playwright
 from playwright_stealth import stealth_sync
-from config import *
+from config.config import *
 
 def perform_login():
 	with sync_playwright() as pw:

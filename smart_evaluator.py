@@ -1,65 +1,33 @@
 # smart_evaluator.py
 
-import os
-import joblib
-import numpy as np
+from ML.predictor import predict_final_price, predict_win_probability
+from config.config_loader import config
 
-# Path to the serialized ML model
-MODEL_PATH = os.path.join("models", "snipe_model.pkl")
-
-def load_model():
+def should_bid(current_price: float, num_bids: int, time_left_sec: int, max_bid: float) -> bool:
     """
-    Attempt to load a trained model from disk. If the file doesn't exist
-    or loading fails, return None.
-    """
-    # return joblib.load(MODEL_PATH) if os.path.exists(MODEL_PATH) else None
+    Main logic to decide whether to place a bid.
 
-    if os.path.exists(MODEL_PATH): 
-        try: 
-            return joblib.load(MODEL_PATH) 
-        except Exception as e: 
-            print(f"⚠️ Failed to load model at {MODEL_PATH}: {e}")
-             
-    return None
-
-# Load once at import time to avoid repeated disk I/O
-_model = load_model()
-
-def should_bid(current_price: float,
-               num_bids: int, 
-               time_left_sec: int, 
-               max_bid: int) -> bool:
-    """
-    Decide whether to place a bid based on either:
-      - A fallback rule if no ML model is available:
-          * Only within the last 5 minutes of the auction
-          * Only if current price is under 90% of your max bid
-      - An ML-based prediction if the model is successfully loaded.
+    Strategy:
+      - Only bid within 5 minutes of auction end.
+      - Predicted final price <= your max bid.
+      - Win probability >= threshold.
 
     Args:
-        current_price: float  - current highest bid in the auction
-        num_bids:      int    - total bids placed so far
-        time_left_sec: float  - seconds remaining until auction close
-        max_bid:       float  - your maximum bid limit
+        current_price: Current highest bid
+        num_bids: Number of bids placed
+        time_left_sec: Seconds left to auction close
+        max_bid: Your maximum willingness to pay
 
     Returns:
-        bool: True to place a bid now, False otherwise.
+        True if bot should place a bid now, False otherwise
     """
-
-    # Fallback rule when model is missing or failed to load
-    if _model is None:
-        window_ok = (time_left_sec <= 5 * 60)       # Only snipe when <= 5 minutes (300s) remain
-        price_ok = (current_price < 0.9 * max_bid)  # Only if current price is under 90%
-        return window_ok and price_ok
+    if time_left_sec > 5 * 60: 
+        return False
     
-    # ML-based decision: build feature vector and predict
-    features = np.array ([[current_price, num_bids, time_left_sec, max_bid]])
+    predicted_price = predict_final_price(current_price, num_bids, time_left_sec)
+    win_probability = predict_win_probability(current_price, num_bids, time_left_sec)
 
-    try:
-        prediction = _model.predict(features[0]) # Predict returns an array, extract the first element
-        return bool(prediction)
-    except Exception as e: # If prediction fails at runtime, log and fallback
-        print(f"⚠️  Prediction failed: {e}")
-        window_ok = (time_left_sec <= 5 * 60)      
-        price_ok = (current_price < 0.9 * max_bid) 
-        return window_ok and price_ok
+    if predicted_price <= max_bid and win_probability >= config['ML']['min_win_probability']:
+        return True
+    
+    return False

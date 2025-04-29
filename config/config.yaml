@@ -1,0 +1,15 @@
+# config.yaml
+
+ML:
+  min_win_probability: 0.7
+  model_paths:
+    price_predictor: "ml/models/price_predictor.pkl"
+    win_classifier: "ml/models/win_classifier.pkl"
+
+dashboard:
+  refresh_interval_sec: 30
+
+data:
+  processed_data_dir: "data/processed"
+  raw_data_dir: "data/raw"
+  processed_data_combined: "data/processed/combined_dataset.csv"
