@@ -9,7 +9,6 @@ ProxySnipeAI is a production-grade eBay auction sniper, built with Playwright an
 - **Stealth Mode Integration:** Leverages playwright-stealth to mask navigator flags, plugins, WebGL fingerprints, and CLI headless indicators.
 - **ML Decision Making:** Predicts final prices and win probabilities using trained models (RandomForest, XGBoost).
 - **Incremental Smart Bidding:** Places $1 increment bids instead of slamming max_bid, mimicking realistic auction behavior.
-- **Proxy Rotation Ready:** Supports secure proxy usage for IP anonymity during auction sniping.
 - **Human-like Timing:** Randomized delays and natural interactions to further avoid detection.
 - **Streamlit Dashboard:** Real-time auction tracking, model predictions, and bidding history visualization (WIP).
 
