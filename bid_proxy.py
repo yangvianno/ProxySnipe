@@ -1,10 +1,12 @@
 # bid_proxy.py
 
 from playwright.sync_api import sync_playwright
+from playwright_stealth import stealth_sync
 from monitor.auction_monitor import monitor_auction
 from smart_evaluator import should_bid
 from utils.logger import get_logger
 import time
+import random
 
 logger = get_logger()
 
@@ -12,6 +14,9 @@ def snipe_proxy(item_url, max_bid, offset_minutes=5):
     with sync_playwright() as p:
         browser = p.chromium.launch(headless = False) # Later stealth mode, proxies,...
         page = browser.new_page()
+
+        # Apply a suite of stealth patches BEFORE navigating
+        stealth_sync(page)
 
         logger.info(f"🌎 Navigating to {item_url}")
         page.goto(item_url)
@@ -55,12 +60,13 @@ def place_bid(page, max_bid, poll_interval=5):
             page.wait_for_selector('input.textbox__control', timeout=5000)
             bid_input = page.locator('input.textbox__control')
             bid_input.fill(str(bid_amount))
+            time.sleep(random.uniform(0.8, 2.5))
 
             # Click the Submit bid button
             page.wait_for_selector('div.place-bid-actions__submit', timeout=5000)
             page.locator('div.place-bid-actions__submit').click()
             logger.info(f"✅ Bid of ${bid_amount} submitted. Waiting {poll_interval}s to check if winning/timeout...")
-            time.sleep(poll_interval)
+            time.sleep(random.uniform(0.8, 2.5))
 
             try:
                 outbid_banner = page.locator("text=/outbid/i", timeout=6000)
