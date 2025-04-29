@@ -10,7 +10,7 @@ ProxySnipeAI is a production-grade eBay auction sniper, built with Playwright an
 - **ML Decision Making:** Predicts final prices and win probabilities using trained models (RandomForest, XGBoost).
 - **Incremental Smart Bidding:** Places $1 increment bids instead of slamming max_bid, mimicking realistic auction behavior.
 - **Human-like Timing:** Randomized delays and natural interactions to further avoid detection.
-- **Streamlit Dashboard:** Real-time auction tracking, model predictions, and bidding history visualization (WIP).
+- **Streamlit Dashboard:** Real-time auction tracking, model predictions, live countdown, and bidding history visualization with auto-refresh UI.
 
 ## 🚀 Getting Started
 
@@ -30,8 +30,18 @@ playwright install  # installs browser binaries
 python proxy_CLI.py --item "...https://www.ebay.com/item/..." --max_bid ... --offset 5
 ```
 
+## Run the Dashboard
+
+```bash
+# Run the dashboard
+streamlit run dashboard/dashboard_app.py
+```
+
 ## 🙌 Built With
 - Playwright
 - playwright-stealth
 - scikit-learn
 - Streamlit
+- python-dotenv
+- joblib
+
