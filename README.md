@@ -1,6 +1,4 @@
-from pathlib import Path
-
-readme_content = """# ProxySnipeAI 🎯
+# ProxySnipeAI 🎯
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)
 ![Playwright](https://img.shields.io/badge/Playwright-Automation-brightgreen?logo=microsoft)
@@ -60,4 +58,3 @@ streamlit run dashboard/dashboard_app.py
 - scikit-learn
 - joblib
 - python-dotenv
-"""
