@@ -1,13 +1,13 @@
-# ProxySnipeAI 🎯
+# ProxySnipe 🎯
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)
 ![Playwright](https://img.shields.io/badge/Playwright-Automation-brightgreen?logo=microsoft)
 ![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red?logo=streamlit)
 ![scikit-learn](https://img.shields.io/badge/ML-scikit--learn-orange)
 
-AI-Powered eBay Auction Sniper Bot with Stealth Automation
+eBay Auction Sniper Bot with Stealth Automation
 
-ProxySnipeAI is a production-grade eBay auction sniper, built with Playwright and enhanced with stealth technology to bypass bot detection. It monitors live auctions, predicts winning chances using machine learning, and places incremental smart bids — all while masquerading as a real human browser session.
+ProxySnipe is a production-grade eBay auction sniper, built with Playwright and enhanced with stealth technology to bypass bot detection. It monitors live auctions, predicts winning chances using machine learning, and places incremental smart bids — all while masquerading as a real human browser session.
 
 ## ✨ Key Features
 - **Cross-browser Automation:** Built on Playwright for reliable, headless or headed operation across Chromium, Firefox, and WebKit.
@@ -21,7 +21,7 @@ ProxySnipeAI is a production-grade eBay auction sniper, built with Playwright an
 
 ```bash
 # Clone the repo
-git clone https://github.com/yangvianno/ProxySnipeAI.git
+git clone https://github.com/yangvianno/ProxySnipe.git
 
 # Set up your virtual environment
 python3 -m venv venv
